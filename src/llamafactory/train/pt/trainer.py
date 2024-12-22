@@ -20,7 +20,7 @@ from transformers import Trainer
 from typing_extensions import override
 
 from ...extras.packages import is_transformers_version_equal_to_4_46, is_transformers_version_greater_than
-from ..callbacks import PissaConvertCallback, SaveProcessorCallback
+from ..callbacks import SaveProcessorCallback
 from ..trainer_utils import create_custom_optimizer, create_custom_scheduler
 
 
@@ -46,9 +46,6 @@ class CustomTrainer(Trainer):
 
         if processor is not None:
             self.add_callback(SaveProcessorCallback(processor))
-
-        if finetuning_args.pissa_convert:
-            self.add_callback(PissaConvertCallback)
 
         if finetuning_args.use_badam:
             from badam import BAdamCallback, clip_grad_norm_old_version  # type: ignore
