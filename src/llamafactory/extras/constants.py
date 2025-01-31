@@ -105,7 +105,7 @@ def register_model_group(
 ) -> None:
     for name, path in models.items():
         SUPPORTED_MODELS[name] = path
-        if template is not None and (any(suffix in name for suffix in ("-Chat", "-Instruct")) or vision):
+        if template is not None and (any(suffix in name for suffix in ("-Chat", "-Distill", "-Instruct")) or vision):
             DEFAULT_TEMPLATE[name] = template
         if vision:
             VISION_MODELS.add(name)
@@ -485,11 +485,11 @@ register_model_group(
             DownloadSource.DEFAULT: "deepseek-ai/DeepSeek-V2.5-1210",
             DownloadSource.MODELSCOPE: "deepseek-ai/DeepSeek-V2.5-1210",
         },
-        "DeepSeek-V3-685B-Base": {
+        "DeepSeek-V3-671B-Base": {
             DownloadSource.DEFAULT: "deepseek-ai/DeepSeek-V3-Base",
             DownloadSource.MODELSCOPE: "deepseek-ai/DeepSeek-V3-Base",
         },
-        "DeepSeek-V3-685B-Chat": {
+        "DeepSeek-V3-671B-Chat": {
             DownloadSource.DEFAULT: "deepseek-ai/DeepSeek-V3",
             DownloadSource.MODELSCOPE: "deepseek-ai/DeepSeek-V3",
         },
@@ -517,11 +517,11 @@ register_model_group(
             DownloadSource.DEFAULT: "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
             DownloadSource.MODELSCOPE: "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
         },
-        "DeepSeek-R1-671B-Zero": {
+        "DeepSeek-R1-671B-Chat-Zero": {
             DownloadSource.DEFAULT: "deepseek-ai/DeepSeek-R1-Zero",
             DownloadSource.MODELSCOPE: "deepseek-ai/DeepSeek-R1-Zero",
-        },        
-        "DeepSeek-R1-671B": {
+        },
+        "DeepSeek-R1-671B-Chat": {
             DownloadSource.DEFAULT: "deepseek-ai/DeepSeek-R1",
             DownloadSource.MODELSCOPE: "deepseek-ai/DeepSeek-R1",
         },
@@ -845,19 +845,14 @@ register_model_group(
             DownloadSource.MODELSCOPE: "Shanghai_AI_Laboratory/internlm2_5-20b-chat",
             DownloadSource.OPENMIND: "Intern/internlm2_5-20b-chat",
         },
-    },
-    template="intern2",
-)
-
-register_model_group(
-    models={
         "InternLM3-8B-Chat": {
             DownloadSource.DEFAULT: "internlm/internlm3-8b-instruct",
             DownloadSource.MODELSCOPE: "Shanghai_AI_Laboratory/internlm3-8b-instruct",
         },
     },
-    template="intern3",
+    template="intern2",
 )
+
 
 register_model_group(
     models={
@@ -1933,6 +1928,14 @@ register_model_group(
             DownloadSource.DEFAULT: "Qwen/Qwen2.5-72B-Instruct",
             DownloadSource.MODELSCOPE: "Qwen/Qwen2.5-72B-Instruct",
         },
+        "Qwen2.5-7B-Instruct-1M": {
+            DownloadSource.DEFAULT: "Qwen/Qwen2.5-7B-Instruct-1M",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen2.5-7B-Instruct-1M",
+        },
+        "Qwen2.5-14B-Instruct-1M": {
+            DownloadSource.DEFAULT: "Qwen/Qwen2.5-14B-Instruct-1M",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen2.5-14B-Instruct-1M",
+        },
         "Qwen2.5-0.5B-Instruct-GPTQ-Int8": {
             DownloadSource.DEFAULT: "Qwen/Qwen2.5-0.5B-Instruct-GPTQ-Int8",
             DownloadSource.MODELSCOPE: "Qwen/Qwen2.5-0.5B-Instruct-GPTQ-Int8",
@@ -2153,6 +2156,18 @@ register_model_group(
         "QVQ-72B-Preview": {
             DownloadSource.DEFAULT: "Qwen/QVQ-72B-Preview",
             DownloadSource.MODELSCOPE: "Qwen/QVQ-72B-Preview",
+        },
+        "Qwen2.5-VL-3B-Instruct": {
+            DownloadSource.DEFAULT: "Qwen/Qwen2.5-VL-3B-Instruct",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen2.5-VL-3B-Instruct",
+        },
+        "Qwen2.5-VL-7B-Instruct": {
+            DownloadSource.DEFAULT: "Qwen/Qwen2.5-VL-7B-Instruct",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen2.5-VL-7B-Instruct",
+        },
+        "Qwen2.5-VL-72B-Instruct": {
+            DownloadSource.DEFAULT: "Qwen/Qwen2.5-VL-72B-Instruct",
+            DownloadSource.MODELSCOPE: "Qwen/Qwen2.5-VL-72B-Instruct",
         },
     },
     template="qwen2_vl",
