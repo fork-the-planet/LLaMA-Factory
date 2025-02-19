@@ -380,10 +380,8 @@ class LlavaNextPlugin(BasePlugin):
         num_image_tokens = 0
         messages = deepcopy(messages)
         mm_inputs = self._get_mm_inputs(images, videos, audios, processor)
-        if "image_sizes" in mm_inputs:
-            image_sizes = iter(mm_inputs["image_sizes"])
-
         if "pixel_values" in mm_inputs:
+            image_sizes = iter(mm_inputs["image_sizes"].tolist())
             height, width = get_image_size(to_numpy_array(mm_inputs["pixel_values"][0][0]))
 
         for message in messages:
@@ -439,7 +437,7 @@ class LlavaNextVideoPlugin(BasePlugin):
         messages = deepcopy(messages)
         mm_inputs = self._get_mm_inputs(images, videos, audios, processor)
         if "pixel_values" in mm_inputs:
-            image_sizes = iter(mm_inputs["image_sizes"])
+            image_sizes = iter(mm_inputs["image_sizes"].tolist())
             height, width = get_image_size(to_numpy_array(mm_inputs["pixel_values"][0][0]))
             for message in messages:
                 content = message["content"]
@@ -916,16 +914,14 @@ class PixtralPlugin(BasePlugin):
         num_image_tokens = 0
         messages = deepcopy(messages)
         mm_inputs = self._get_mm_inputs(images, videos, audios, processor)
-        image_input_sizes = mm_inputs.get("image_sizes", None)
+        if "pixel_values" in mm_inputs:
+            image_sizes = iter(mm_inputs["image_sizes"].tolist())
+
         for message in messages:
             content = message["content"]
             while IMAGE_PLACEHOLDER in content:
-                if image_input_sizes is None:
-                    raise ValueError("Cannot get image input sizes.")
-
                 if self.expand_mm_tokens:
-                    image_size = image_input_sizes[0][num_image_tokens]
-                    height, width = image_size
+                    height, width = next(image_sizes)
                     num_height_tokens = height // patch_size
                     num_width_tokens = width // patch_size
                     replace_tokens = [[image_token] * num_width_tokens + [image_break_token]] * num_height_tokens
@@ -959,9 +955,6 @@ class PixtralPlugin(BasePlugin):
     ) -> Dict[str, Union[List[int], "torch.Tensor"]]:
         self._validate_input(images, videos, audios)
         mm_inputs = self._get_mm_inputs(images, videos, audios, processor)
-        if mm_inputs.get("pixel_values"):
-            mm_inputs["pixel_values"] = mm_inputs["pixel_values"][0]
-
         mm_inputs.pop("image_sizes", None)
         return mm_inputs
 
@@ -1112,9 +1105,13 @@ class Qwen2vlPlugin(BasePlugin):
         self._validate_input(images, videos, audios)
         image_processor: "BaseImageProcessor" = getattr(processor, "image_processor")
         merge_length: int = getattr(image_processor, "merge_size") ** 2
-        mm_inputs = self._get_mm_inputs(images, videos, audios, processor)
-        image_grid_thw = mm_inputs.get("image_grid_thw", [])
-        video_grid_thw = mm_inputs.get("video_grid_thw", [])
+        if self.expand_mm_tokens:
+            mm_inputs = self._get_mm_inputs(images, videos, audios, processor)
+            image_grid_thw = mm_inputs.get("image_grid_thw", [])
+            video_grid_thw = mm_inputs.get("video_grid_thw", [])
+        else:
+            image_grid_thw = [None] * len(images)
+            video_grid_thw = [None] * len(videos)
 
         num_image_tokens, num_video_tokens = 0, 0
         messages = deepcopy(messages)
